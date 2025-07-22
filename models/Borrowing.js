@@ -1,0 +1,59 @@
+const mongoose = require("mongoose");
+
+const borrowingSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  book: {
+    type: String,
+    ref: "Book",
+    required: true,
+  },
+  borrowedDate: {
+    type: Date,
+    default: Date.now,
+  },
+  dueDate: {
+    type: Date,
+    required: true,
+  },
+  returnedDate: {
+    type: Date,
+  },
+  status: {
+    type: String,
+    enum: ["Borrowed", "Returned", "Overdue"],
+    default: "Borrowed",
+  },
+  fine: {
+    type: Number,
+    default: 0,
+  },
+});
+
+//Update Book Availability When Borrowwing
+borrowingSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const Book = mongoose.model("Book");
+    await Book.findByIdAndUpdate(this.book, { $inc: { availableCopies: -1 } });
+  }
+  next;
+});
+
+//Update Book Availability When Returning
+borrowingSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+  if (update.returnedDate && !this._updateReturned) {
+    this._updateReturned = true;
+    const docToUpdate = await this.model.findOne(this.getQuery());
+    const Book = mongoose.model("Book");
+    await Book.findByIdAndUpdate(docToUpdate.book, {
+      $inc: { availableCopies: 1 },
+    });
+  }
+  next();
+});
+
+module.exports = mongoose.model("Borrowing", borrowingSchema);
