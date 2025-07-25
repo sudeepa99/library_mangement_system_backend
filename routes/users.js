@@ -13,4 +13,5 @@ router.use(protect);
 router.use(authorize("librarian"));
 
 router.route("/").get(getUsers);
+
 router.route("/:id").get(getUser).put(updateUser).delete(deleteuser);
