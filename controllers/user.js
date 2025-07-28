@@ -59,6 +59,7 @@ exports.updateUser = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
+      message: "User Updated Successfully",
       data: user,
     });
   } catch (err) {
@@ -78,6 +79,7 @@ exports.deleteuser = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
+      message: "User Delted Successfully",
       data: {},
     });
   } catch (err) {

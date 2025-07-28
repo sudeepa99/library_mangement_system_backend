@@ -15,6 +15,7 @@ exports.getBooks = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: "Books fetched successfully.",
       count: books.length,
       data: books,
     });
@@ -35,6 +36,7 @@ exports.getBook = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
+      message: "Book fetched successfully.",
       data: book,
     });
   } catch (err) {
@@ -50,6 +52,7 @@ exports.createBook = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
+      message: "Book created successfully.",
       data: book,
     });
   } catch (err) {
@@ -72,6 +75,7 @@ exports.updateBook = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
+      message: "Book updated successfully.",
       data: book,
     });
   } catch (err) {
@@ -91,6 +95,7 @@ exports.deleteBook = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
+      message: "Book deleted successfully.",
       data: {},
     });
   } catch (err) {
@@ -105,6 +110,7 @@ exports.getBookCategories = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: "Book categories fetched successfully.",
       count: categories.length,
       data: categories,
     });

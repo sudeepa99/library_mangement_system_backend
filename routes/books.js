@@ -22,6 +22,6 @@ router
   .route("/:id")
   .get(getBook)
   .put(protect, authorize("librarian"), updateBook)
-  .delete(protect, authorize("librarian", deleteBook));
+  .delete(protect, authorize("librarian"), deleteBook);
 
 module.exports = router;

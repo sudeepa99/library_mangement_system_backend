@@ -85,6 +85,7 @@ exports.createBorrowing = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
+      message: "Borrowing Created Successfully",
       data: borrowing,
     });
   } catch (err) {
@@ -134,6 +135,7 @@ exports.returnBook = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      message: "Book Returned Successfully",
       data: updatedBorrowing,
     });
   } catch (err) {
