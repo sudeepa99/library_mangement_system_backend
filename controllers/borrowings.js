@@ -124,7 +124,7 @@ exports.returnBook = async (req, res, next) => {
       req.params.id,
       {
         returnedDate: today,
-        status: "returned",
+        status: "Returned",
         fine,
       },
       {
