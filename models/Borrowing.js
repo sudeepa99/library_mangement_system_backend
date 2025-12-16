@@ -7,7 +7,7 @@ const borrowingSchema = new mongoose.Schema({
     required: true,
   },
   book: {
-    type: String,
+    type: mongoose.Schema.ObjectId,
     ref: "Book",
     required: true,
   },

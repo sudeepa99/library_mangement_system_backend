@@ -47,7 +47,59 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const allowedUpdates = ["name", "email", "role"];
+    const updates = {};
+
+    Object.keys(req.body).forEach((key) => {
+      if (allowedUpdates.includes(key)) {
+        updates[key] = req.body[key];
+      }
+    });
+
+    if (Object.keys(updates).length === 0) {
+      return next(
+        new ErrorResponse(
+          "No valid fields provided for update. Allowed fields: name, email, role",
+          400
+        )
+      );
+    }
+
+    if (updates.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(updates.email)) {
+        return next(
+          new ErrorResponse("Please provide a valid email address", 400)
+        );
+      }
+    }
+
+    if (updates.role) {
+      const validRoles = ["librarian", "member"];
+      if (!validRoles.includes(updates.role)) {
+        return next(
+          new ErrorResponse(
+            `Role must be one of: ${validRoles.join(", ")}`,
+            400
+          )
+        );
+      }
+    }
+
+    if (updates.email) {
+      const existingUser = await User.findOne({
+        email: updates.email.toLowerCase(),
+        _id: { $ne: req.params.id },
+      });
+
+      if (existingUser) {
+        return next(new ErrorResponse("Email already exists", 400));
+      }
+
+      updates.email = updates.email.toLowerCase();
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,
     });
@@ -57,6 +109,7 @@ exports.updateUser = async (req, res, next) => {
         new ErrorResponse(`User not found with id of ${req.params.id}`, 404)
       );
     }
+
     res.status(200).json({
       success: true,
       message: "User Updated Successfully",
