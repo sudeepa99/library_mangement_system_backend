@@ -144,7 +144,6 @@ exports.returnBook = async (req, res, next) => {
 };
 
 //Get User Borrowings
-
 exports.getUserBorrowings = async (req, res, next) => {
   try {
     //Check if user exists
