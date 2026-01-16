@@ -16,7 +16,7 @@ router.use(protect);
 router
   .route("/")
   .get(authorize("librarian"), getBorrowings)
-  .post(authorize("librarian"), createBorrowing);
+  .post(authorize("member"), createBorrowing);
 
 router.route("/overdue").get(authorize("librarian"), getOverdueBorrowings);
 

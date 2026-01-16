@@ -54,8 +54,10 @@ exports.getBorrowing = async (req, res, next) => {
 //Create New Borrowing
 exports.createBorrowing = async (req, res, next) => {
   try {
+    const { user: userId, book: bookId } = req.body;
     //Check if book is available
-    const book = await Book.findById(req.body.book);
+    // const book = await Book.findById(req.body.book);
+    const book = await Book.findById(bookId);
     if (!book) {
       return next(
         new ErrorResponse(`Book not found with id of ${req.body.book}`, 404)
@@ -74,14 +76,38 @@ exports.createBorrowing = async (req, res, next) => {
       );
     }
 
+    const existingBorrowing = await Borrowing.findOne({
+      user: userId,
+      book: bookId,
+      status: "Borrowed",
+    });
+
+    if (existingBorrowing) {
+      return next(new ErrorResponse("You already borrowed this book", 400));
+    }
+
+    const activeBorrowings = await Borrowing.countDocuments({
+      user: userId,
+      status: "Borrowed",
+    });
+
+    if (activeBorrowings >= 3) {
+      return next(new ErrorResponse("Borrowing limit reached", 400));
+    }
+
     //Calculate Due Date
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 14);
 
     const borrowing = await Borrowing.create({
-      ...req.body,
+      user: userId,
+      book: bookId,
       dueDate,
+      status: "Borrowed",
     });
+
+    book.availableCopies -= 1;
+    await book.save();
 
     res.status(201).json({
       success: true,

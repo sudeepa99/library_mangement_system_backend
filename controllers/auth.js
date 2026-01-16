@@ -103,6 +103,11 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 exports.logout = async (req, res, next) => {
   try {
+    res.cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+
     res.status(200).json({
       success: true,
       message: "User logged out successfully",
