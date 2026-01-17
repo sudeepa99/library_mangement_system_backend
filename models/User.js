@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs"); // use to securely hash passswords
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,6 +20,8 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
     role: {
       type: String,
       enum: ["librarian", "member"],
@@ -49,8 +52,6 @@ const userSchema = new mongoose.Schema(
     //     ref: "Borrowing",
     //   },
     // ],
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
   },
   // {
   //   timestamps: true, // Adds createdAt and updatedAt automatically
@@ -79,5 +80,18 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 
 //This method is called when the user tries to log in.
 //It compares the entered password with the hashed password stored in the DB.
+
+// userSchema.methods.getResetPasswordToken = function () {
+//   const resetToken = crypto.randomBytes(20).toString("hex");
+
+//   this.resetPasswordToken = crypto
+//     .createHash("sha256")
+//     .update(resetToken)
+//     .digest("hex");
+
+//   this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+//   return resetToken;
+// };
 
 module.exports = mongoose.model("User", userSchema);
