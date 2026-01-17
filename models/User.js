@@ -49,7 +49,9 @@ const userSchema = new mongoose.Schema(
     //     ref: "Borrowing",
     //   },
     // ],
-  }
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+  },
   // {
   //   timestamps: true, // Adds createdAt and updatedAt automatically
   // }
