@@ -134,7 +134,8 @@ exports.sendResetCode = async (req, res, next) => {
   const hashedCode = await bcrypt.hash(code, 10);
 
   user.resetCode = hashedCode;
-  user.resetCodeExpire = Date.now() + 10 * 60 * 1000;
+  // user.resetCodeExpire = Date.now() + 10 * 60 * 1000;
+  user.resetCodeExpire = new Date(Date.now() + 10 * 60 * 1000);
   await user.save({ validateBeforeSave: false });
 
   const message = `Your password reset code is: ${code}. It expires in 10 minutes.`;
@@ -159,11 +160,12 @@ exports.sendResetCode = async (req, res, next) => {
 
 //verify reset code
 exports.verifyresetCode = async (req, res, next) => {
-  const { emai, code } = req.body;
+  const { email, code } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user) return next(newErrorResponse("Invalid email", 404));
-  if (!user.resetCode || user.resetCodeExpire < Date.now())
+  if (!user) return next(new ErrorResponse("Invalid email", 404));
+
+  if (!user.resetCode || user.resetCodeExpire.getTime() < Date.now())
     return next(new ErrorResponse("Code expired", 400));
 
   const isValid = await bcrypt.compare(code, user.resetCode);
@@ -177,7 +179,10 @@ exports.resetPasswordWithCode = async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user) return next(new ErrorResponse("Invalid email", 404));
-  if (!user.resetCode || user.resetCodeExpire < Date.now())
+  // if (!user.resetCode || user.resetCodeExpire < Date.now())
+  //   return next(new ErrorResponse("Code expired", 400));
+
+  if (!user.resetCode || user.resetCodeExpire.getTime() < Date.now())
     return next(new ErrorResponse("Code expired", 400));
 
   const isValid = await bcrypt.compare(code, user.resetCode);

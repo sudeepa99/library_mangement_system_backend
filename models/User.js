@@ -22,6 +22,8 @@ const userSchema = new mongoose.Schema(
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    resetCode: String,
+    resetCodeExpire: Date,
     role: {
       type: String,
       enum: ["librarian", "member"],
