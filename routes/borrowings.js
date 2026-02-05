@@ -20,7 +20,7 @@ router
 
 router.route("/overdue").get(authorize("librarian"), getOverdueBorrowings);
 
-router.route("/:id/return").put(authorize("librarian"), returnBook);
+router.route("/:id/return").put(authorize("member"), returnBook);
 
 router.route("/:id").get(authorize("librarian"), getBorrowing);
 
