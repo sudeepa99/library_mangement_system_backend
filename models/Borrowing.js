@@ -39,7 +39,7 @@ borrowingSchema.pre("save", async function (next) {
     const Book = mongoose.model("Book");
     await Book.findByIdAndUpdate(this.book, { $inc: { availableCopies: -1 } });
   }
-  next;
+  next();
 });
 
 //Update Book Availability When Returning

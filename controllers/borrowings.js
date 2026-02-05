@@ -39,7 +39,7 @@ exports.getBorrowing = async (req, res, next) => {
 
     if (!borrowing) {
       return next(
-        new ErrorResponse(`Borrowing not found with id of ${req.params.id}`)
+        new ErrorResponse(`Borrowing not found with id of ${req.params.id}`),
       );
     }
     res.status(200).json({
@@ -60,7 +60,7 @@ exports.createBorrowing = async (req, res, next) => {
     const book = await Book.findById(bookId);
     if (!book) {
       return next(
-        new ErrorResponse(`Book not found with id of ${req.body.book}`, 404)
+        new ErrorResponse(`Book not found with id of ${req.body.book}`, 404),
       );
     }
 
@@ -72,7 +72,7 @@ exports.createBorrowing = async (req, res, next) => {
 
     if (!user) {
       return next(
-        new ErrorResponse(`User not found with id of ${req.body.user}`, 404)
+        new ErrorResponse(`User not found with id of ${req.body.user}`, 404),
       );
     }
 
@@ -128,8 +128,8 @@ exports.returnBook = async (req, res, next) => {
       return next(
         new ErrorResponse(
           `Borrowing not found with id of ${req.params.id}`,
-          404
-        )
+          404,
+        ),
       );
     }
 
@@ -156,7 +156,7 @@ exports.returnBook = async (req, res, next) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
 
     res.status(200).json({
@@ -178,13 +178,20 @@ exports.getUserBorrowings = async (req, res, next) => {
 
     if (!user) {
       return next(
-        new ErrorResponse(`User not found with id of ${req.params.userId}`, 404)
+        new ErrorResponse(
+          `User not found with id of ${req.params.userId}`,
+          404,
+        ),
       );
     }
 
-    const borrowings = await Borrowing.find({
-      user: req.params.UserId,
-    })
+    const query = { user: req.params.userId };
+
+    if (req.query.status) {
+      query.status = req.query.status;
+    }
+
+    const borrowings = await Borrowing.find(query)
       .populate({
         path: "book",
         select: "title author",

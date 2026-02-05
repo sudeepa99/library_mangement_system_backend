@@ -32,7 +32,10 @@ exports.login = async (req, res, next) => {
 
   try {
     //check for user
-    const user = await User.findOne({ email }).select("+password");
+    // const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: email.toLowerCase() }).select(
+      "+password",
+    );
 
     if (!user) {
       return next(new ErrorResponse("Invalid Credentials", 401));
