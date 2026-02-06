@@ -41,6 +41,12 @@ exports.login = async (req, res, next) => {
       return next(new ErrorResponse("Invalid Credentials", 401));
     }
 
+    if (!user.isActive) {
+      return next(
+        new ErrorResponse("Account is disabled. Contact admin.", 403),
+      );
+    }
+
     //check password matches
     const isMatch = await user.matchPassword(password);
 
@@ -50,7 +56,9 @@ exports.login = async (req, res, next) => {
 
     //Update Last Login
 
-    user.lastLogin = Date.now();
+    // user.lastLogin = Date.now();
+    user.lastLogin = undefined;
+
     await user.save();
 
     sendTokenResponse(user, 200, res);
