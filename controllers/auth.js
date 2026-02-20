@@ -206,3 +206,45 @@ exports.resetPasswordWithCode = async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Password reset successful" });
 };
+
+// Update current logged in user details
+exports.updateMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select("+password");
+
+    if (!user) {
+      return next(new ErrorResponse("User not found", 404));
+    }
+
+    // Update name if provided
+    if (req.body.name) {
+      user.name = req.body.name;
+    }
+
+    // Update password if provided
+    if (req.body.currentPassword && req.body.newPassword) {
+      // Check current password
+      const isMatch = await user.matchPassword(req.body.currentPassword);
+
+      if (!isMatch) {
+        return next(new ErrorResponse("Current password is incorrect", 401));
+      }
+
+      user.password = req.body.newPassword;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
