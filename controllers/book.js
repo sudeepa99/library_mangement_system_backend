@@ -31,7 +31,7 @@ exports.getBook = async (req, res, next) => {
 
     if (!book) {
       return next(
-        new ErrorResponse(`Book not found with id of ${req.params.id}`, 404)
+        new ErrorResponse(`Book not found with id of ${req.params.id}`, 404),
       );
     }
     res.status(200).json({
@@ -70,7 +70,7 @@ exports.updateBook = async (req, res, next) => {
 
     if (!book) {
       return next(
-        new ErrorResponse(`Book not found with id of ${req.params.id}`, 404)
+        new ErrorResponse(`Book not found with id of ${req.params.id}`, 404),
       );
     }
     res.status(200).json({
@@ -90,7 +90,7 @@ exports.deleteBook = async (req, res, next) => {
 
     if (!book) {
       return next(
-        new ErrorResponse(`Book not found with id of $(req.params.id)`, 404)
+        new ErrorResponse(`Book not found with id of ${req.params.id}`, 404),
       );
     }
     res.status(200).json({

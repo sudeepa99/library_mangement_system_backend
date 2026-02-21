@@ -1,3 +1,4 @@
+const { min } = require("moment");
 const mongoose = require("mongoose");
 
 const bookSchema = new mongoose.Schema({
@@ -37,7 +38,7 @@ const bookSchema = new mongoose.Schema({
   },
   availableCopies: {
     type: Number,
-    availableCopies: true,
+    min: 0,
   },
   createdAt: {
     type: Date,

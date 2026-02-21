@@ -37,22 +37,32 @@ const borrowingSchema = new mongoose.Schema({
 borrowingSchema.pre("save", async function (next) {
   if (this.isNew) {
     const Book = mongoose.model("Book");
-    await Book.findByIdAndUpdate(this.book, { $inc: { availableCopies: -1 } });
+
+    const updatedBook = await Book.findOneAndUpdate(
+      { _id: this.book, availableCopies: { $gt: 0 } },
+      { $inc: { availableCopies: -1 } },
+      { new: true },
+    );
+
+    if (!updatedBook) {
+      return next(new Error("No available copies of this book"));
+    }
   }
   next();
 });
 
-//Update Book Availability When Returning
 borrowingSchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate();
-  if (update.returnedDate && !this._updateReturned) {
-    this._updateReturned = true;
+
+  if (update.status === "Returned") {
     const docToUpdate = await this.model.findOne(this.getQuery());
+
     const Book = mongoose.model("Book");
     await Book.findByIdAndUpdate(docToUpdate.book, {
       $inc: { availableCopies: 1 },
     });
   }
+
   next();
 });
 

@@ -106,8 +106,8 @@ exports.createBorrowing = async (req, res, next) => {
       status: "Borrowed",
     });
 
-    book.availableCopies -= 1;
-    await book.save();
+    // book.availableCopies -= 1;
+    // await book.save();
 
     res.status(201).json({
       success: true,
@@ -218,7 +218,7 @@ exports.getOverdueBorrowings = async (req, res, next) => {
       returnedDate: { $exists: false },
     })
       .populate({
-        path: "User Book",
+        path: "user book",
         select: "name email title author ",
       })
       .sort("dueDate");
