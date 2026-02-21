@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { getBorrowingTrends } = require("../controllers/reportsController");
 const { protect, authorize } = require("../middleware/auth");
+const { getBorrowingTrends } = require("../controllers/reports");
 
 router.use(protect);
 router.use(authorize("librarian"));
