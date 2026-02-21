@@ -128,3 +128,82 @@ exports.getKeyMetrics = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+exports.getAnalyticsReport = async (req, res) => {
+  try {
+    const topBorrowers = await Borrowing.aggregate([
+      {
+        $group: {
+          _id: "$user",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+    ]);
+
+    const booksByCategory = await Book.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          name: "$_id",
+          value: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    const topBooks = await Borrowing.aggregate([
+      {
+        $group: {
+          _id: "$book",
+          borrowCount: { $sum: 1 },
+        },
+      },
+      { $sort: { borrowCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "books",
+          localField: "_id",
+          foreignField: "_id",
+          as: "book",
+        },
+      },
+      { $unwind: "$book" },
+      {
+        $project: {
+          _id: "$book._id",
+          title: "$book.title",
+          borrowCount: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        topBorrowers,
+        booksByCategory,
+        topBooks,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
