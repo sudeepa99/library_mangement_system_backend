@@ -4,26 +4,13 @@ exports.getBorrowingTrends = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
 
-    let start;
-    let end = new Date();
-
-    if (startDate && endDate) {
-      start = new Date(startDate);
-      end = new Date(endDate);
-    } else {
-      // Default: last 12 months
-      start = new Date();
-      start.setMonth(start.getMonth() - 11);
-      start.setDate(1);
-    }
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
     const trends = await Borrowing.aggregate([
       {
         $match: {
-          borrowedDate: {
-            $gte: start,
-            $lte: end,
-          },
+          borrowedDate: { $gte: start, $lte: end },
         },
       },
       {
@@ -40,32 +27,34 @@ exports.getBorrowingTrends = async (req, res, next) => {
           },
         },
       },
-      {
-        $sort: {
-          "_id.year": 1,
-          "_id.month": 1,
-        },
-      },
     ]);
 
-    // Format data for frontend chart
-    const formatted = trends.map((item) => {
-      const monthDate = new Date(item._id.year, item._id.month - 1);
+    const result = [];
+    const current = new Date(start);
 
-      return {
-        month: monthDate.toLocaleDateString("en-US", {
+    while (current <= end) {
+      const year = current.getFullYear();
+      const month = current.getMonth() + 1;
+
+      const existing = trends.find(
+        (t) => t._id.year === year && t._id.month === month,
+      );
+
+      result.push({
+        month: current.toLocaleDateString("en-US", {
           month: "short",
           year: "numeric",
         }),
-        borrowings: item.borrowings,
-        returns: item.returns,
-      };
-    });
+        borrowings: existing ? existing.borrowings : 0,
+        returns: existing ? existing.returns : 0,
+      });
+
+      current.setMonth(current.getMonth() + 1);
+    }
 
     res.status(200).json({
       success: true,
-      count: formatted.length,
-      data: formatted,
+      data: result,
     });
   } catch (err) {
     next(err);
