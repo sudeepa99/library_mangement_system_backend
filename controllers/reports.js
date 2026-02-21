@@ -1,3 +1,4 @@
+const Book = require("../models/Book");
 const Borrowing = require("../models/Borrowing");
 
 exports.getBorrowingTrends = async (req, res, next) => {
