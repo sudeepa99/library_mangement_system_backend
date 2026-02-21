@@ -44,6 +44,18 @@ const bookSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  websiteLink: {
+    type: String,
+    trim: true,
+    required: true,
+    validate: {
+      validator: function (v) {
+        // Optional: basic URL pattern check
+        return !v || /^https?:\/\/.+$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid URL!`,
+    },
+  },
 });
 
 //Set Available Copies Equal to Copies When Creating a New Book
