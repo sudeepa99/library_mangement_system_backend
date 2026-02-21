@@ -37,7 +37,6 @@ const bookSchema = new mongoose.Schema({
   },
   availableCopies: {
     type: Number,
-    required: true,
     availableCopies: true,
   },
   createdAt: {
