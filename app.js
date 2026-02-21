@@ -11,6 +11,7 @@ const borrowings = require("./routes/borrowings");
 const categories = require("./routes/category");
 const dashboardStats = require("./routes/dashboard");
 const notifications = require("./routes/notification");
+const reports = require("./routes/reports");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/error");
 
@@ -41,6 +42,7 @@ app.use("/api/v1/borrowings", borrowings);
 app.use("/api/v1/categories", categories);
 app.use("/api/v1/dashboard", dashboardStats);
 app.use("/api/v1/notifications", notifications);
+app.use("/api/v1/reports", reports);
 
 // Error handler middleware
 app.use(errorHandler);
