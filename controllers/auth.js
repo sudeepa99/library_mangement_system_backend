@@ -32,7 +32,6 @@ exports.login = async (req, res, next) => {
 
   try {
     //check for user
-    // const user = await User.findOne({ email }).select("+password");
     const user = await User.findOne({ email: email.toLowerCase() }).select(
       "+password",
     );
@@ -145,7 +144,6 @@ exports.sendResetCode = async (req, res, next) => {
   const hashedCode = await bcrypt.hash(code, 10);
 
   user.resetCode = hashedCode;
-  // user.resetCodeExpire = Date.now() + 10 * 60 * 1000;
   user.resetCodeExpire = new Date(Date.now() + 10 * 60 * 1000);
   await user.save({ validateBeforeSave: false });
 
@@ -190,8 +188,6 @@ exports.resetPasswordWithCode = async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user) return next(new ErrorResponse("Invalid email", 404));
-  // if (!user.resetCode || user.resetCodeExpire < Date.now())
-  //   return next(new ErrorResponse("Code expired", 400));
 
   if (!user.resetCode || user.resetCodeExpire.getTime() < Date.now())
     return next(new ErrorResponse("Code expired", 400));

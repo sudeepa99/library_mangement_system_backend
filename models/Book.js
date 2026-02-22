@@ -1,4 +1,3 @@
-const { min } = require("moment");
 const mongoose = require("mongoose");
 
 const bookSchema = new mongoose.Schema({
@@ -50,7 +49,6 @@ const bookSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function (v) {
-        // Optional: basic URL pattern check
         return !v || /^https?:\/\/.+$/.test(v);
       },
       message: (props) => `${props.value} is not a valid URL!`,

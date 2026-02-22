@@ -2,63 +2,45 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs"); // use to securely hash passswords
 const crypto = require("crypto");
 
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true, // trim removes leading spaces
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-    },
-    password: {
-      type: String,
-      required: true,
-      minlength: 6,
-    },
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
-    resetCode: String,
-    resetCodeExpire: Date,
-    role: {
-      type: String,
-      enum: ["librarian", "member"],
-      default: "librarian",
-    },
-    // phone: {
-    //   type: String,
-    //   trim: true,
-    // },
-    // address: {
-    //   type: String,
-    //   trim: true,
-    // },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    lastLogin: {
-      type: Date,
-    },
-    // borrowingHistory: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Borrowing",
-    //   },
-    // ],
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true, // trim removes leading spaces
   },
-  // {
-  //   timestamps: true, // Adds createdAt and updatedAt automatically
-  // }
-);
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
+  },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  resetCode: String,
+  resetCodeExpire: Date,
+  role: {
+    type: String,
+    enum: ["librarian", "member"],
+    default: "librarian",
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+  lastLogin: {
+    type: Date,
+  },
+});
 
 // Encrypt password before saving
 userSchema.pre("save", async function (next) {

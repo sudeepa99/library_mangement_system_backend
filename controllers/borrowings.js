@@ -55,8 +55,6 @@ exports.getBorrowing = async (req, res, next) => {
 exports.createBorrowing = async (req, res, next) => {
   try {
     const { user: userId, book: bookId } = req.body;
-    //Check if book is available
-    // const book = await Book.findById(req.body.book);
     const book = await Book.findById(bookId);
     if (!book) {
       return next(
@@ -105,9 +103,6 @@ exports.createBorrowing = async (req, res, next) => {
       dueDate,
       status: "Borrowed",
     });
-
-    // book.availableCopies -= 1;
-    // await book.save();
 
     res.status(201).json({
       success: true,
